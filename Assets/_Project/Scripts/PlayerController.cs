@@ -2,6 +2,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using InventorySystem;
 
 public class PlayerController : MonoBehaviour
 {
@@ -32,6 +33,9 @@ public class PlayerController : MonoBehaviour
 
     [HideInInspector]
     public InputActions inputActions;
+    
+    [Header("Инвентарь")]
+    [SerializeField] InventoryUI inventoryUI;
 
     [Header("Пауза")]
     [SerializeField] private GameObject pauseCanvas;
@@ -55,6 +59,7 @@ public class PlayerController : MonoBehaviour
     public GameObject interactPromptUI; // UI-элемент "E" в Canvas
 
     private IInteractable currentInteractable;
+    private PickableItem currentPickableItem;
 
     [Header("Frame Rate Settings")]
     public int targetFrameRate = 60;
@@ -107,6 +112,7 @@ public class PlayerController : MonoBehaviour
         inputActions.Player.Look.canceled += OnLook;
         inputActions.Player.Interact.performed += OnInteract;
         inputActions.Player.Pause.performed += OnPause;
+        inputActions.Player.Inventory.performed += OnInventory;
     }
 
     private void OnDisable()
@@ -119,6 +125,7 @@ public class PlayerController : MonoBehaviour
         inputActions.Player.Look.canceled -= OnLook;
         inputActions.Player.Interact.performed -= OnInteract;
         inputActions.Player.Pause.performed -= OnPause;
+        inputActions.Player.Inventory.performed -= OnInventory;
     }
 
     private void Update()
@@ -211,17 +218,28 @@ public class PlayerController : MonoBehaviour
 
     private void HandleInteractionRay()
     {
+        currentPickableItem = null;
+
         currentInteractable = null;
         interactPromptUI.SetActive(false);
 
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
         if (Physics.Raycast(ray, out RaycastHit hit, interactDistance, interactMask | obstacleMask))
         {
+            /*
             currentInteractable = hit.collider.GetComponent<IInteractable>();
 
             if (currentInteractable != null)
             {
                 if (currentInteractable.GetUsed()) return;
+                interactPromptUI.SetActive(true);
+            }
+            */
+
+            currentPickableItem = hit.collider.GetComponent<PickableItem>();
+
+            if (currentPickableItem != null)
+            {
                 interactPromptUI.SetActive(true);
             }
         }
@@ -233,6 +251,11 @@ public class PlayerController : MonoBehaviour
         if (context.performed && currentInteractable != null)
         {
             currentInteractable.Interact(this);
+        }
+
+        if (context.performed && currentPickableItem != null)
+        {
+            currentPickableItem.PickUp();
         }
     }
 
@@ -260,6 +283,11 @@ public class PlayerController : MonoBehaviour
         {
             TogglePause();
         }
+    }
+
+    private void OnInventory(InputAction.CallbackContext context)
+    {
+        if (context.performed) inventoryUI.ToggleInventory();
     }
 
     public void TogglePause()
