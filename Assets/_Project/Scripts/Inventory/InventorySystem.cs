@@ -121,7 +121,7 @@ namespace InventorySystem
             item.Use();
             
             // Если предмет расходуемый, удаляем его
-            if (item.itemType == ItemType.Consumable || item.itemType == ItemType.Potion)
+            if (item.isStackable)
             {
                 RemoveItem(slotIndex, 1);
             }

@@ -5,9 +5,7 @@ namespace InventorySystem
     public enum ItemType
     {
         Weapon,
-        Potion,
-        QuestItem,
-        Consumable,
-        Material
+        SmokeGrenade,
+        FlashGrenade
     }
 }
