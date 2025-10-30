@@ -10,6 +10,7 @@ namespace InventorySystem
     {
         [Header("References")]
         [SerializeField] private GameObject inventoryPanel;
+        [SerializeField] private GameObject tooltipPanel;
         [SerializeField] private Transform slotsParent;
         [SerializeField] private GameObject slotPrefab;
         
@@ -22,18 +23,33 @@ namespace InventorySystem
         
         private List<SlotUI> slotUIList = new List<SlotUI>();
         private bool isOpen = false;
+        private bool isInitialized = false;
 
         // События для уведомления слотов о состоянии инвентаря
         public Action<bool> OnInventoryToggle;
         
         private void Start()
         {
+            // Инициализируем систему, но не включаем панель
+            Initialize();
+        }
+        
+        private void Initialize()
+        {
+            if (isInitialized) return;
+            
             CreateSlots();
             SetupButtons();
             
             InventorySystem.Instance.OnInventoryChanged += RefreshUI;
+
+            // Гарантируем, что панель выключена
+            if (inventoryPanel != null)
+                inventoryPanel.SetActive(false);
+
+            tooltipPanel.SetActive(true);
             
-            inventoryPanel.SetActive(false);
+            isInitialized = true;
         }
         
         private void OnDestroy()
@@ -81,6 +97,8 @@ namespace InventorySystem
         
         public void ToggleInventory()
         {
+            if (!isInitialized) Initialize();
+
             isOpen = !isOpen;
             inventoryPanel.SetActive(isOpen);
 

@@ -25,8 +25,9 @@ namespace InventorySystem
                 return;
             }
             Instance = this;
-            
+
             canvas = GetComponentInParent<Canvas>();
+            
             Hide();
         }
         
