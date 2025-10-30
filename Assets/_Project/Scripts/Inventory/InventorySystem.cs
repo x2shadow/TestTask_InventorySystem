@@ -106,8 +106,13 @@ namespace InventorySystem
         {
             if (slotIndex < 0 || slotIndex >= slots.Length || slots[slotIndex].IsEmpty)
                 return false;
-            
+
+            // Логируем удаление
+            ActionLog.Instance?.LogItemDeleted(slots[slotIndex].item.itemName, slots[slotIndex].quantity);
+
             slots[slotIndex].RemoveItem(slots[slotIndex].quantity);
+
+
             OnInventoryChanged?.Invoke();
             return true;
         }
@@ -119,6 +124,9 @@ namespace InventorySystem
             
             Item item = slots[slotIndex].item;
             item.Use();
+
+            // Логируем использование
+            ActionLog.Instance?.LogItemUsed(item.itemName);
             
             // Если предмет расходуемый, удаляем его
             if (item.isStackable)
