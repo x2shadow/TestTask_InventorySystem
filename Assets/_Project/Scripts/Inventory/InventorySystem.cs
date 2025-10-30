@@ -187,8 +187,17 @@ namespace InventorySystem
 
         public void SortInventory(bool byType = true)
         {
-            List<InventorySlot> nonEmptySlots = slots.Where(s => !s.IsEmpty).ToList();
-
+            // Собираем только непустые слоты
+            List<InventorySlot> nonEmptySlots = new List<InventorySlot>();
+            for (int i = 0; i < slots.Length; i++)
+            {
+                if (!slots[i].IsEmpty)
+                {
+                    nonEmptySlots.Add(slots[i].Clone());
+                }
+            }
+            
+            // Сортируем
             if (byType)
             {
                 nonEmptySlots = nonEmptySlots.OrderBy(s => s.item.itemType)
@@ -199,19 +208,20 @@ namespace InventorySystem
             {
                 nonEmptySlots = nonEmptySlots.OrderBy(s => s.item.itemName).ToList();
             }
-
-            // Очищаем весь инвентарь
+            
+            // Создаем новый массив слотов
             for (int i = 0; i < slots.Length; i++)
             {
-                slots[i].Clear();
+                slots[i] = new InventorySlot();
             }
-
+            
             // Заполняем отсортированными предметами
             for (int i = 0; i < nonEmptySlots.Count; i++)
             {
-                slots[i] = nonEmptySlots[i].Clone();
+                slots[i].item = nonEmptySlots[i].item;
+                slots[i].quantity = nonEmptySlots[i].quantity;
             }
-
+            
             OnInventoryChanged?.Invoke();
         }
         
