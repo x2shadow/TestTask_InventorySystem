@@ -21,20 +21,34 @@ namespace InventorySystem
         private float lastClickTime;
         private const float doubleClickThreshold = 0.3f;
         private bool isPointerOver = false;
+        private bool isInventoryOpen = false;
         
         public int SlotIndex => slotIndex;
         public InventorySlot Slot => slot;
-        
-        public void Initialize(int index)
+
+        public void Initialize(int index, InventoryUI inventoryUI)
         {
             slotIndex = index;
+
+            inventoryUI.OnInventoryToggle += OnInventoryToggled;
+
             UpdateSlot();
         }
         
+        private void OnDestroy()
+        {
+            // Отписываемся от события при уничтожении объекта
+            InventoryUI inventoryUI = FindObjectOfType<InventoryUI>();
+            if (inventoryUI != null)
+            {
+                inventoryUI.OnInventoryToggle -= OnInventoryToggled;
+            }
+        }
+
         public void UpdateSlot()
         {
             slot = InventorySystem.Instance.GetSlot(slotIndex);
-            
+
             if (slot == null || slot.IsEmpty)
             {
                 iconImage.enabled = false;
@@ -56,10 +70,21 @@ namespace InventorySystem
                 }
 
                 // Обновляем тултип если курсор над слотом
-                if (isPointerOver)
+                if (isPointerOver && isInventoryOpen)
                 {
                     TooltipUI.Instance?.Show(slot.item.GetTooltip(), transform.position);
                 }
+            }
+        }
+        
+        private void OnInventoryToggled(bool isOpen)
+        {
+            isInventoryOpen = isOpen;
+            
+            // Если инвентарь закрывается, сбрасываем состояние слота
+            if (!isOpen)
+            {
+                ResetState();
             }
         }
         
@@ -88,6 +113,8 @@ namespace InventorySystem
 
         public void OnPointerClick(PointerEventData eventData)
         {
+            if (!isInventoryOpen) return;
+
             if (eventData.button == PointerEventData.InputButton.Left)
             {
                 // Проверка на двойной клик
@@ -114,11 +141,18 @@ namespace InventorySystem
                 InventorySystem.Instance.UseItem(slotIndex);
             }
         }
-        
+
         public void SetHighlight(bool highlight)
         {
             if (backgroundImage != null)
                 backgroundImage.color = highlight ? highlightColor : normalColor;
+        }
+        
+        // Новый метод для сброса состояния слота
+        public void ResetState()
+        {
+            isPointerOver = false;
+            SetHighlight(false);
         }
     }
 }

@@ -287,7 +287,11 @@ public class PlayerController : MonoBehaviour
 
     private void OnInventory(InputAction.CallbackContext context)
     {
-        if (context.performed) inventoryUI.ToggleInventory();
+        if (context.performed)
+        {
+            inventoryUI.ToggleInventory();
+            SetInputBlocked(inventoryUI.IsOpen);
+        } 
     }
 
     public void TogglePause()

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System;
 
 namespace InventorySystem
 {
@@ -21,6 +22,9 @@ namespace InventorySystem
         
         private List<SlotUI> slotUIList = new List<SlotUI>();
         private bool isOpen = false;
+
+        // События для уведомления слотов о состоянии инвентаря
+        public Action<bool> OnInventoryToggle;
         
         private void Start()
         {
@@ -51,7 +55,7 @@ namespace InventorySystem
                 
                 if (slotUI != null)
                 {
-                    slotUI.Initialize(i);
+                    slotUI.Initialize(i, this);
                     slotUIList.Add(slotUI);
                 }
             }
@@ -79,7 +83,7 @@ namespace InventorySystem
         {
             isOpen = !isOpen;
             inventoryPanel.SetActive(isOpen);
-            
+
             if (isOpen)
             {
                 RefreshUI();
@@ -88,12 +92,17 @@ namespace InventorySystem
             }
             else
             {
+                // Уведомляем все слоты о закрытии инвентаря
+                OnInventoryToggle?.Invoke(false);
                 TooltipUI.Instance?.Hide();
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
             }
+            
+            // Уведомляем все слоты об изменении состояния инвентаря
+            OnInventoryToggle?.Invoke(isOpen);
         }
-        
+
         private void RefreshUI()
         {
             foreach (var slotUI in slotUIList)
