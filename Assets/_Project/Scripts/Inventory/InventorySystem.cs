@@ -11,6 +11,7 @@ namespace InventorySystem
         
         [SerializeField] private int rows = 4;
         [SerializeField] private int columns = 5;
+        [SerializeField] private ItemDatabase itemDatabase;
         
         private InventorySlot[] slots;
         public int TotalSlots => rows * columns;
@@ -26,6 +27,15 @@ namespace InventorySystem
             }
             Instance = this;
             
+            if (itemDatabase == null)
+            {
+                Debug.LogError("ItemDatabase is not assigned in InventorySystem!");
+            }
+            else
+            {
+                itemDatabase.Initialize();
+            }
+            
             InitializeInventory();
         }
         
@@ -40,9 +50,9 @@ namespace InventorySystem
         
         public bool AddItem(Item item, int amount = 1)
         {
-            if (item == null) { Debug.Log("item == null"); return false; }
+            if (item == null) return false;
             
-            // Если предмет стакаемый, попробуем добавить к существующим стакам
+            // Если предмет стекаемый, попробуем добавить к существующим стакам
             if (item.isStackable)
             {
                 for (int i = 0; i < slots.Length; i++)
@@ -92,13 +102,14 @@ namespace InventorySystem
             return true;
         }
         
-        public void DeleteItem(int slotIndex)
+        public bool DeleteItem(int slotIndex, int amount = 1)
         {
             if (slotIndex < 0 || slotIndex >= slots.Length || slots[slotIndex].IsEmpty)
-                return;
+                return false;
             
             slots[slotIndex].RemoveItem(slots[slotIndex].quantity);
             OnInventoryChanged?.Invoke();
+            return true;
         }
         
         public void UseItem(int slotIndex)
@@ -184,7 +195,7 @@ namespace InventorySystem
             }
             return -1;
         }
-
+        
         public void SortInventory(bool byType = true)
         {
             // Собираем только непустые слоты
@@ -226,9 +237,14 @@ namespace InventorySystem
         }
         
         // Сохранение и загрузка
-        
         public void SaveInventory()
         {
+            if (itemDatabase == null)
+            {
+                Debug.LogError("Cannot save: ItemDatabase is not assigned!");
+                return;
+            }
+            
             InventorySaveData saveData = new InventorySaveData();
             saveData.slots = new List<SlotSaveData>();
             
@@ -253,6 +269,12 @@ namespace InventorySystem
         
         public void LoadInventory()
         {
+            if (itemDatabase == null)
+            {
+                Debug.LogError("Cannot load: ItemDatabase is not assigned!");
+                return;
+            }
+            
             if (!PlayerPrefs.HasKey("InventorySave"))
             {
                 Debug.Log("Сохранение не найдено");
@@ -265,13 +287,17 @@ namespace InventorySystem
             // Очищаем инвентарь
             InitializeInventory();
             
-            // Загружаем предметы
+            // Загружаем предметы через ItemDatabase
             foreach (var slotData in saveData.slots)
             {
-                Item item = Resources.Load<Item>($"Items/{slotData.itemName}");
+                Item item = itemDatabase.GetItemByName(slotData.itemName);
                 if (item != null)
                 {
                     slots[slotData.slotIndex].AddItem(item, slotData.quantity);
+                }
+                else
+                {
+                    Debug.LogWarning($"Item '{slotData.itemName}' not found in database during load!");
                 }
             }
             
@@ -283,6 +309,11 @@ namespace InventorySystem
         {
             InitializeInventory();
             OnInventoryChanged?.Invoke();
+        }
+        
+        public ItemDatabase GetItemDatabase()
+        {
+            return itemDatabase;
         }
     }
     
