@@ -58,7 +58,6 @@ public class PlayerController : MonoBehaviour
     public LayerMask obstacleMask; // слои препятствий
     public GameObject interactPromptUI; // UI-элемент "E" в Canvas
 
-    private IInteractable currentInteractable;
     private PickableItem currentPickableItem;
 
     [Header("Frame Rate Settings")]
@@ -219,23 +218,11 @@ public class PlayerController : MonoBehaviour
     private void HandleInteractionRay()
     {
         currentPickableItem = null;
-
-        currentInteractable = null;
         interactPromptUI.SetActive(false);
 
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
         if (Physics.Raycast(ray, out RaycastHit hit, interactDistance, interactMask | obstacleMask))
         {
-            /*
-            currentInteractable = hit.collider.GetComponent<IInteractable>();
-
-            if (currentInteractable != null)
-            {
-                if (currentInteractable.GetUsed()) return;
-                interactPromptUI.SetActive(true);
-            }
-            */
-
             currentPickableItem = hit.collider.GetComponent<PickableItem>();
 
             if (currentPickableItem != null)
@@ -248,10 +235,6 @@ public class PlayerController : MonoBehaviour
     private void OnInteract(UnityEngine.InputSystem.InputAction.CallbackContext context)
     {
         if (isInputBlocked) return;
-        if (context.performed && currentInteractable != null)
-        {
-            currentInteractable.Interact(this);
-        }
 
         if (context.performed && currentPickableItem != null)
         {
