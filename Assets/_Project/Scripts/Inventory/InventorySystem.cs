@@ -52,7 +52,6 @@ namespace InventorySystem
         {
             if (item == null) return false;
             
-            // Если предмет стекаемый, попробуем добавить к существующим стакам
             if (item.isStackable)
             {
                 for (int i = 0; i < slots.Length; i++)
@@ -164,7 +163,7 @@ namespace InventorySystem
                 return true;
             }
             
-            // Если это один и тот же предмет и он стекаемый
+            // Если это один и тот же предмет и он стакаемый
             if (from.item == to.item && from.item.isStackable)
             {
                 int spaceLeft = to.item.maxStackSize - to.quantity;
@@ -215,15 +214,15 @@ namespace InventorySystem
                     nonEmptySlots.Add(slots[i].Clone());
                 }
             }
-            
-            // Сортируем
+
+            // Сортируем по типу
             if (byType)
             {
                 nonEmptySlots = nonEmptySlots.OrderBy(s => s.item.itemType)
                                              .ThenBy(s => s.item.itemName)
                                              .ToList();
             }
-            else
+            else // По имени
             {
                 nonEmptySlots = nonEmptySlots.OrderBy(s => s.item.itemName).ToList();
             }

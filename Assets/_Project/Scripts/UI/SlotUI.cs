@@ -148,7 +148,6 @@ namespace InventorySystem
                 backgroundImage.color = highlight ? highlightColor : normalColor;
         }
         
-        // Новый метод для сброса состояния слота
         public void ResetState()
         {
             isPointerOver = false;

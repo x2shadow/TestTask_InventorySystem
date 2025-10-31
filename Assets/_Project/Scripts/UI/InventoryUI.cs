@@ -25,12 +25,10 @@ namespace InventorySystem
         private bool isOpen = false;
         private bool isInitialized = false;
 
-        // События для уведомления слотов о состоянии инвентаря
         public Action<bool> OnInventoryToggle;
         
         private void Start()
         {
-            // Инициализируем систему, но не включаем панель
             Initialize();
         }
         
@@ -43,7 +41,6 @@ namespace InventorySystem
             
             InventorySystem.Instance.OnInventoryChanged += RefreshUI;
 
-            // Гарантируем, что панель выключена
             if (inventoryPanel != null)
                 inventoryPanel.SetActive(false);
 

@@ -43,7 +43,7 @@ namespace InventorySystem
             iconImage.sprite = currentSlot.Slot.item.icon;
             iconImage.raycastTarget = false;
             
-            draggedRectTransform.sizeDelta = new Vector2(64, 64);
+            draggedRectTransform.sizeDelta = new Vector2(100, 100);
             
             draggedCanvasGroup = draggedIcon.AddComponent<CanvasGroup>();
             draggedCanvasGroup.alpha = 0.7f;

@@ -53,10 +53,10 @@ public class PlayerController : MonoBehaviour
     private Vector3 velocity;
 
     [Header("Взаимодействие")]
-    public float interactDistance = 3f; // дальность луча
-    public LayerMask interactMask; // слои для проверки
-    public LayerMask obstacleMask; // слои препятствий
-    public GameObject interactPromptUI; // UI-элемент "E" в Canvas
+    public float interactDistance = 3f;
+    public LayerMask interactMask; 
+    public LayerMask obstacleMask; 
+    public GameObject interactPromptUI; 
 
     private PickableItem currentPickableItem;
 
@@ -80,12 +80,6 @@ public class PlayerController : MonoBehaviour
         inputActions = new InputActions();
         characterController = GetComponent<CharacterController>();
         playerCamera = Camera.main;
-
-        //originalControllerHeight = characterController.height;
-        //originalControllerCenter = characterController.center;
-        //currentHeight = characterController.height;
-
-        //cameraInitialLocalPos = CinemachineCameraTarget.transform.localPosition;
     }
 
     void Start()
@@ -104,7 +98,7 @@ public class PlayerController : MonoBehaviour
     private void OnEnable()
     {
         inputActions.Enable();
-        // Подписка на события для экшенов
+        // Action subscription
         inputActions.Player.Move.performed += OnMove;
         inputActions.Player.Move.canceled += OnMove;
         inputActions.Player.Look.performed += OnLook;
@@ -117,7 +111,7 @@ public class PlayerController : MonoBehaviour
     private void OnDisable()
     {
         inputActions.Disable();
-        // Отписка от событий
+        // Action unsubscription
         inputActions.Player.Move.performed -= OnMove;
         inputActions.Player.Move.canceled -= OnMove;
         inputActions.Player.Look.performed -= OnLook;
@@ -180,7 +174,7 @@ public class PlayerController : MonoBehaviour
             //Don't multiply mouse input by Time.deltaTime
             float deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;
 
-            // обработка инверсии по Y
+            // Y inversion
             float yInput = invertY ? lookInput.y : -lookInput.y;
 
             cinemachineTargetPitch += yInput * mouseSensitivity * deltaTimeMultiplier;
@@ -244,7 +238,6 @@ public class PlayerController : MonoBehaviour
 
     public void ApplyFrameRateSettings()
     {
-        // Установка целевого FPS
         Application.targetFrameRate = targetFrameRate;
     }
 

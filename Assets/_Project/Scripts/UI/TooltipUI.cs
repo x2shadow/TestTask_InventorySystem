@@ -63,8 +63,6 @@ namespace InventorySystem
             float overflowX = 0;
             float overflowY = 0;
             
-            RectTransform canvasRect = canvas.transform as RectTransform;
-            
             if (corners[2].x > Screen.width)
                 overflowX = corners[2].x - Screen.width;
             

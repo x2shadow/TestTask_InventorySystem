@@ -80,7 +80,6 @@ namespace InventorySystem
             }
             canvasGroup.alpha = 1f;
             
-            // Ждём
             yield return new WaitForSeconds(displayDuration);
             
             // Плавное исчезновение

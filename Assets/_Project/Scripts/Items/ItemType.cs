@@ -5,7 +5,6 @@ namespace InventorySystem
     public enum ItemType
     {
         Weapon,
-        SmokeGrenade,
-        FlashGrenade
+        Grenade
     }
 }

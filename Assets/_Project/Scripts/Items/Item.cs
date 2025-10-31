@@ -16,9 +16,6 @@ namespace InventorySystem
         public bool isStackable;
         public int maxStackSize = 99;
         
-        //[Header("Optional")]
-        //public GameObject worldPrefab;
-        
         public virtual void Use()
         {
             Debug.Log($"Used {itemName}");
