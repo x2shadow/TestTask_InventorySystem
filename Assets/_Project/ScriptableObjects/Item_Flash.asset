@@ -16,6 +16,6 @@ MonoBehaviour:
   description: A non-lethal device that temporarily disorients enemies with a blinding
     flash and a loud bang
   icon: {fileID: 21300000, guid: 9dd6ee74c9caf5548b53e446b7d6f6d1, type: 3}
-  itemType: 2
+  itemType: 1
   isStackable: 1
   maxStackSize: 4
